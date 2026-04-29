@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Stack+Sans+Notch:wght@200..700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Google Sans", sans-serif;
+  --font-sans: "Google Sans", sans-serif;
+  --color-brand-accent: #A8C7FA; /* Google Material Dark Blue */
+  --color-brand-bg: #131314; /* Requested background */
+  --color-brand-surface: #1E1F20; /* Slightly lighter for cards/sidebar */
+  --color-brand-card: #1E1F20;
+  --color-brand-text: #E3E3E3; /* Google Dark Primary Text */
+  --color-brand-muted: #C4C7C5; /* Google Dark Secondary Text */
+  --color-brand-border: #444746; /* Google Dark Outline */
+}
+
+body {
+  background-color: var(--color-brand-bg);
+  color: var(--color-brand-text);
+  font-family: var(--font-sans);
+  color-scheme: dark;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-brand-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-muted);
+}
