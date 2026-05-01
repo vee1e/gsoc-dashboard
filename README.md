@@ -1,13 +1,9 @@
 # GSoC Proposals Dashboard
 
-[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev)
-[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite)](https://vitejs.dev)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4-06B6D4?logo=tailwindcss)](https://tailwindcss.com)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+<img width="1439" height="904" alt="image" src="https://github.com/user-attachments/assets/a12f0a3a-f427-4a2c-9922-df146afb61a7" />
+
 
 A sleek, dark-themed dashboard for exploring Google Summer of Code (GSoC) accepted proposals. Browse contributor profiles, filter by organization and year, view proposal PDFs, and discover inspiring open-source contributors.
-
-![Dashboard Preview](./src/assets/hero.png)
 
 ## Features
 
