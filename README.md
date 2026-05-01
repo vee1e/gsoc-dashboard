@@ -2,8 +2,8 @@
 
 <img width="1439" height="904" alt="image" src="https://github.com/user-attachments/assets/a12f0a3a-f427-4a2c-9922-df146afb61a7" />
 
-
-A sleek, dark-themed dashboard for exploring Google Summer of Code (GSoC) accepted proposals. Browse contributor profiles, filter by organization and year, view proposal PDFs, and discover inspiring open-source contributors.
+<br>
+<center>A sleek, dark-themed dashboard for exploring Google Summer of Code (GSoC) accepted proposals. Browse contributor profiles, filter by organization and year, view proposal PDFs, and discover inspiring open-source contributors.</center>
 
 ## Features
 
