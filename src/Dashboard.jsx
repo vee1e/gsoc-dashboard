@@ -14,10 +14,10 @@ import {
   faInfoCircle
 } from '@fortawesome/free-solid-svg-icons'
 
-// Simple grid - always 3 cards that resize based on available space
+// Responsive grid - 1 col mobile, 2 col tablet, 3 col desktop
 function CardGrid({ items }) {
   return (
-    <div className="grid grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
       {items.map((item, idx) => (
         <ProposalCard key={idx} data={item} />
       ))}
@@ -212,24 +212,27 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-[var(--color-brand-bg)] text-[var(--color-brand-text)] font-[var(--font-sans)] flex">
-      {/* Mobile Filter Toggle */}
-      <button
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="lg:hidden fixed bottom-6 right-6 z-50 w-14 h-14 bg-[var(--color-brand-accent)] text-white rounded-full shadow-2xl flex items-center justify-center transition-transform active:scale-95"
-      >
-        <FontAwesomeIcon icon={sidebarOpen ? faTimes : faBars} className="text-xl" />
-      </button>
-
       {/* Sidebar Filters */}
-      <aside 
+      <aside
         className={`
           fixed lg:sticky lg:top-0 z-40 h-screen bg-[var(--color-brand-surface)] border-r border-[var(--color-brand-border)]
           transform transition-transform duration-300 ease-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-          flex flex-col relative
+          flex flex-col max-w-[85vw] lg:max-w-none
         `}
         style={{ width: sidebarWidth }}
       >
+        {/* Mobile Sidebar Header */}
+        <div className="lg:hidden flex items-center justify-between p-4 border-b border-[var(--color-brand-border)]">
+          <span className="font-medium text-[var(--color-brand-text)]">Filters & Search</span>
+          <button 
+            onClick={() => setSidebarOpen(false)}
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--color-brand-bg)] text-[var(--color-brand-muted)] transition-colors"
+          >
+            <FontAwesomeIcon icon={faTimes} />
+          </button>
+        </div>
+
         {/* Resize Handle */}
         <div
           className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize hover:bg-[var(--color-brand-accent)]/30 transition-colors z-50"
@@ -289,7 +292,7 @@ export function Dashboard() {
             <label className="flex items-center gap-2 text-sm font-semibold text-[var(--color-brand-text)]">
               <FontAwesomeIcon icon={faSearch} className="text-[var(--color-brand-accent)]" />
               Search
-              <span className="ml-auto text-[10px] text-[var(--color-brand-muted)] bg-[var(--color-brand-bg)] px-1.5 py-0.5 rounded border border-[var(--color-brand-border)]">
+              <span className="hidden lg:block ml-auto text-[10px] text-[var(--color-brand-muted)] bg-[var(--color-brand-bg)] px-1.5 py-0.5 rounded border border-[var(--color-brand-border)]">
                 ⌘K
               </span>
             </label>
@@ -419,8 +422,14 @@ export function Dashboard() {
       {/* Main Content */}
       <main className="flex-1 min-w-0">
         {/* Header */}
-        <header className="bg-[var(--color-brand-surface)] px-6 lg:px-10 py-5">
-          <div className="flex items-center gap-4">
+        <header className="bg-[var(--color-brand-surface)] px-4 sm:px-6 lg:px-10 py-4 sm:py-5 sticky top-0 z-20 shadow-sm">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden w-10 h-10 flex items-center justify-center rounded-full hover:bg-[var(--color-brand-bg)] text-[var(--color-brand-text)] transition-colors -ml-2"
+            >
+              <FontAwesomeIcon icon={faBars} className="text-lg" />
+            </button>
             <h1 className="text-xl lg:text-2xl font-medium tracking-tight whitespace-nowrap text-[var(--color-brand-text)]">
               GSoC Proposals
             </h1>
@@ -439,7 +448,7 @@ export function Dashboard() {
         </header>
 
         {/* Results Bar */}
-        <div className="px-6 lg:px-10 py-3 bg-[var(--color-brand-surface)] border-b border-[var(--color-brand-border)]">
+        <div className="px-4 sm:px-6 lg:px-10 py-3 bg-[var(--color-brand-surface)] border-b border-[var(--color-brand-border)]">
           <div className="flex items-center justify-between">
             <p className="text-sm text-[var(--color-brand-muted)]">
               Showing <span className="font-medium text-[var(--color-brand-text)]">{filteredData.length}</span> of {data.length} proposals
@@ -451,7 +460,7 @@ export function Dashboard() {
         </div>
 
         {/* Cards Grid */}
-        <div className="px-6 lg:px-10 py-6">
+        <div className="px-4 sm:px-6 lg:px-10 py-4 sm:py-6">
           {filteredData.length === 0 ? (
             <div className="text-center py-24 px-6 border border-dashed border-[var(--color-brand-border)] rounded-2xl bg-[var(--color-brand-surface)]/50">
               <h3 className="text-2xl font-[var(--font-serif)] font-bold text-[var(--color-brand-text)] mb-2">No results found</h3>

@@ -48,20 +48,21 @@ export function ProposalCard({ data }) {
     <article className="h-full flex flex-col bg-[var(--color-brand-surface)] rounded-2xl border border-[var(--color-brand-border)] hover:bg-[#282A2C] transition-colors duration-200 overflow-hidden">
       
       {/* Header */}
-      <header className="p-5 border-b border-[var(--color-brand-border)]">
-        <h2 className="text-xl font-medium text-[var(--color-brand-accent)] leading-tight line-clamp-2 mb-4">
+      <header className="p-4 sm:p-5 border-b border-[var(--color-brand-border)]">
+        <h2 className="text-lg sm:text-xl font-medium text-[var(--color-brand-accent)] leading-tight line-clamp-2 mb-3 sm:mb-4">
           {data.org || "Unknown Organization"}
         </h2>
 
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-[var(--color-brand-bg)] text-[var(--color-brand-text)] rounded-md text-xs font-medium min-w-0" title={data.fullname || "Anonymous"}>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-[var(--color-brand-bg)] text-[var(--color-brand-text)] rounded-md text-xs font-medium min-w-0 max-w-[140px] sm:max-w-none" title={data.fullname || "Anonymous"}>
             <FontAwesomeIcon icon={faUser} className="text-[10px] text-[var(--color-brand-muted)] flex-shrink-0" />
             <span className="truncate">{data.fullname || "Anonymous"}</span>
           </span>
           {data.previous_no_of_prs_in_org && data.previous_no_of_prs_in_org !== "0" && (
             <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-[var(--color-brand-bg)] text-[var(--color-brand-muted)] rounded-md text-xs font-medium flex-shrink-0">
               <FontAwesomeIcon icon={faCodeBranch} className="text-[10px]" />
-              {data.previous_no_of_prs_in_org} {data.previous_no_of_prs_in_org === "1" ? "PR" : "PRs"}
+              <span className="hidden sm:inline">{data.previous_no_of_prs_in_org} {data.previous_no_of_prs_in_org === "1" ? "PR" : "PRs"}</span>
+              <span className="sm:hidden">{data.previous_no_of_prs_in_org}</span>
             </span>
           )}
           {data.pdf_filename && (
@@ -69,7 +70,7 @@ export function ProposalCard({ data }) {
               href={`/pdfs/${data.pdf_filename}`} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#A8C7FA]/10 text-[#A8C7FA] hover:bg-[#A8C7FA]/20 text-xs font-medium transition-colors flex-shrink-0 ml-auto"
+              className="inline-flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-full bg-[#A8C7FA]/10 text-[#A8C7FA] hover:bg-[#A8C7FA]/20 text-xs font-medium transition-colors flex-shrink-0 ml-auto"
             >
               <FontAwesomeIcon icon={faFilePdf} className="text-xs" />
               <span className="hidden sm:inline">Proposal</span>
@@ -80,7 +81,7 @@ export function ProposalCard({ data }) {
       </header>
 
       {/* Content */}
-      <div className="p-5 space-y-4">
+      <div className="p-4 sm:p-5 space-y-4">
         {/* Academic Info - Minimal */}
         {((data.college && data.college !== "Unknown College") || data.pdf_filename) && (
           <div className="flex items-center gap-2 text-xs text-[var(--color-brand-muted)]">
@@ -127,8 +128,8 @@ export function ProposalCard({ data }) {
       </div>
 
       {/* Footer */}
-      <footer className="mt-auto px-5 py-4 border-t border-[var(--color-brand-border)] bg-[var(--color-brand-bg)]/50">
-        <div className="flex items-center gap-2.5 flex-wrap">
+      <footer className="mt-auto px-4 sm:px-5 py-3 sm:py-4 border-t border-[var(--color-brand-border)] bg-[var(--color-brand-bg)]/50">
+        <div className="flex items-center gap-2 flex-wrap">
           {socialLinks.length > 0 ? (
             socialLinks.map((social) => {
               const Icon = socialIconMap[social.key];
@@ -137,10 +138,10 @@ export function ProposalCard({ data }) {
               const iconButton = (
                 <span
                   key={social.key}
-                  className="w-7 h-7 rounded-full bg-[var(--color-brand-surface)] border border-[var(--color-brand-border)] flex items-center justify-center text-[var(--color-brand-muted)] hover:text-[var(--color-brand-accent)] hover:border-[var(--color-brand-accent)]/50 transition-all"
+                  className="w-8 h-8 sm:w-7 sm:h-7 rounded-full bg-[var(--color-brand-surface)] border border-[var(--color-brand-border)] flex items-center justify-center text-[var(--color-brand-muted)] hover:text-[var(--color-brand-accent)] hover:border-[var(--color-brand-accent)]/50 transition-all"
                   title={isUrl ? social.key : `${social.key}: ${social.link}`}
                 >
-                  <FontAwesomeIcon icon={Icon} className="text-xs" />
+                  <FontAwesomeIcon icon={Icon} className="text-sm sm:text-xs" />
                 </span>
               );
               
