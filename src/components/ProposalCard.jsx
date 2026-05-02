@@ -53,8 +53,8 @@ export function ProposalCard({ data }) {
           {data.org || "Unknown Organization"}
         </h2>
 
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-[var(--color-brand-bg)] text-[var(--color-brand-text)] rounded-md text-xs font-medium min-w-0 max-w-[140px] sm:max-w-none" title={data.fullname || "Anonymous"}>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-[var(--color-brand-bg)] text-[var(--color-brand-text)] rounded-md text-xs font-medium min-w-0 max-w-[160px]" title={data.fullname || "Anonymous"}>
             <FontAwesomeIcon icon={faUser} className="text-[10px] text-[var(--color-brand-muted)] flex-shrink-0" />
             <span className="truncate">{data.fullname || "Anonymous"}</span>
           </span>

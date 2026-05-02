@@ -2,10 +2,10 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import Papa from 'papaparse'
 import { ProposalCard } from './components/ProposalCard'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { 
-  faSearch, 
-  faFilter, 
-  faBuilding, 
+import {
+  faSearch,
+  faFilter,
+  faBuilding,
   faGraduationCap,
   faTimes,
   faBars,
@@ -33,10 +33,11 @@ export function Dashboard() {
   const [creditsOpen, setCreditsOpen] = useState(false)
   const [sidebarWidth, setSidebarWidth] = useState(256) // Default 256px (16rem)
   const [isResizing, setIsResizing] = useState(false)
-   
+
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedOrg, setSelectedOrg] = useState('All')
   const [selectedYear, setSelectedYear] = useState('All')
+  const [selectedGsocYear, setSelectedGsocYear] = useState('All')
   const [selectedCollege, setSelectedCollege] = useState('All')
   const [minPRs, setMinPRs] = useState(0)
   const [sortBy, setSortBy] = useState('org') // name, org, year, prs
@@ -109,20 +110,29 @@ export function Dashboard() {
   const filterOptions = useMemo(() => {
     const orgs = new Set()
     const years = new Set()
+    const gsocYears = new Set()
     const colleges = new Set()
-    
+
     data.forEach((item) => {
       if (item.org) orgs.add(item.org)
       // Only add valid numeric years
       if (item.year_of_graduation && /^\d{4}$/.test(item.year_of_graduation)) {
         years.add(parseInt(item.year_of_graduation))
       }
+      // Extract GSoC year from pdf_filename (format: "Org - YEAR - Name.pdf")
+      if (item.pdf_filename) {
+        const match = item.pdf_filename.match(/\b(20\d{2})\b/)
+        if (match) {
+          gsocYears.add(parseInt(match[1]))
+        }
+      }
       if (item.college) colleges.add(item.college)
     })
-    
+
     return {
       orgs: ['All', ...Array.from(orgs).sort()],
       years: ['All', ...Array.from(years).sort((a, b) => b - a).map(String)],
+      gsocYears: ['All', ...Array.from(gsocYears).sort((a, b) => b - a).map(String)],
       colleges: ['All', ...Array.from(colleges).sort()]
     }
   }, [data])
@@ -131,20 +141,21 @@ export function Dashboard() {
   const filteredData = useMemo(() => {
     let result = data.filter((item) => {
       const searchLower = searchTerm.toLowerCase()
-      const matchesSearch = !searchTerm || 
-        item.fullname?.toLowerCase().includes(searchLower) || 
+      const matchesSearch = !searchTerm ||
+        item.fullname?.toLowerCase().includes(searchLower) ||
         item.org?.toLowerCase().includes(searchLower) ||
         item.college?.toLowerCase().includes(searchLower) ||
         item.short_desc_about_contributor_40_words?.toLowerCase().includes(searchLower)
-      
+
       const matchesOrg = selectedOrg === 'All' || item.org === selectedOrg
       const matchesYear = selectedYear === 'All' || item.year_of_graduation === selectedYear
+      const matchesGsocYear = selectedGsocYear === 'All' || (item.pdf_filename && item.pdf_filename.includes(selectedGsocYear))
       const matchesCollege = selectedCollege === 'All' || item.college === selectedCollege
       const matchesPRs = minPRs === 0 || parseInt(item.previous_no_of_prs_in_org || 0) >= minPRs
-      
-      return matchesSearch && matchesOrg && matchesYear && matchesCollege && matchesPRs
+
+      return matchesSearch && matchesOrg && matchesYear && matchesGsocYear && matchesCollege && matchesPRs
     })
-    
+
     // Sort results
     return result.sort((a, b) => {
       let comparison = 0
@@ -166,21 +177,23 @@ export function Dashboard() {
       }
       return sortOrder === 'asc' ? comparison : -comparison
     })
-  }, [data, searchTerm, selectedOrg, selectedYear, selectedCollege, minPRs, sortBy, sortOrder])
+  }, [data, searchTerm, selectedOrg, selectedYear, selectedGsocYear, selectedCollege, minPRs, sortBy, sortOrder])
 
   // Active filters count
   const activeFilterCount = useMemo(() => {
     let count = 0
     if (selectedOrg !== 'All') count++
     if (selectedYear !== 'All') count++
+    if (selectedGsocYear !== 'All') count++
     if (selectedCollege !== 'All') count++
     if (minPRs > 0) count++
     return count
-  }, [selectedOrg, selectedYear, selectedCollege, minPRs])
+  }, [selectedOrg, selectedYear, selectedGsocYear, selectedCollege, minPRs])
 
   const clearFilters = useCallback(() => {
     setSelectedOrg('All')
     setSelectedYear('All')
+    setSelectedGsocYear('All')
     setSelectedCollege('All')
     setMinPRs(0)
     setSearchTerm('')
@@ -225,7 +238,7 @@ export function Dashboard() {
         {/* Mobile Sidebar Header */}
         <div className="lg:hidden flex items-center justify-between p-4 border-b border-[var(--color-brand-border)]">
           <span className="font-medium text-[var(--color-brand-text)]">Filters & Search</span>
-          <button 
+          <button
             onClick={() => setSidebarOpen(false)}
             className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[var(--color-brand-bg)] text-[var(--color-brand-muted)] transition-colors"
           >
@@ -350,6 +363,28 @@ export function Dashboard() {
             </div>
           </div>
 
+          {/* GSoC Year */}
+          <div className="space-y-3">
+            <label className="flex items-center gap-2 text-sm font-semibold text-[var(--color-brand-text)]">
+              <FontAwesomeIcon icon={faGraduationCap} className="text-[var(--color-brand-accent)]" />
+              GSoC Year
+            </label>
+            <div className="relative">
+              <select
+                className="w-full bg-[var(--color-brand-bg)] border border-[var(--color-brand-border)] rounded-lg py-2.5 px-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-accent)] focus:border-transparent appearance-none cursor-pointer text-sm text-[var(--color-brand-text)]"
+                value={selectedGsocYear}
+                onChange={(e) => setSelectedGsocYear(e.target.value)}
+              >
+                {filterOptions.gsocYears.map((year) => (
+                  <option key={year} value={year} className="bg-[var(--color-brand-bg)] text-[var(--color-brand-text)]">{year}</option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[var(--color-brand-muted)]">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
+            </div>
+          </div>
+
           {/* College */}
           <div className="space-y-3">
             <label className="flex items-center gap-2 text-sm font-semibold text-[var(--color-brand-text)]">
@@ -413,7 +448,7 @@ export function Dashboard() {
 
       {/* Mobile Overlay */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/20 z-30 lg:hidden backdrop-blur-sm"
           onClick={() => setSidebarOpen(false)}
         />
@@ -476,7 +511,7 @@ export function Dashboard() {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/80" onClick={() => setCreditsOpen(false)} />
             <div className="relative bg-[var(--color-brand-surface)] border border-[var(--color-brand-border)] rounded-xl max-w-lg w-full p-6 shadow-2xl">
-              <button 
+              <button
                 onClick={() => setCreditsOpen(false)}
                 className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-[var(--color-brand-muted)] hover:text-[var(--color-brand-text)] transition-colors"
               >
@@ -492,6 +527,7 @@ export function Dashboard() {
                   <li><a href="https://github.com/JatsuAkaYashvant/Accepted-proposals" target="_blank" rel="noopener noreferrer" className="text-[var(--color-brand-accent)] hover:underline">Yashvant Singh</a></li>
                   <li><a href="https://github.com/Google-Summer-of-Code-Archive/gsoc-proposals-archive" target="_blank" rel="noopener noreferrer" className="text-[var(--color-brand-accent)] hover:underline">GSoC Proposals Archive</a></li>
                   <li><a href="https://github.com/SammanSarkar/GSoC_archive_2025" target="_blank" rel="noopener noreferrer" className="text-[var(--color-brand-accent)] hover:underline">Samman Sarkar&apos;s GSoC 2025 Archive</a></li>
+                  <li><a href="https://github.com/satwiksps/GSoC_archive_2026" target="_blank" rel="noopener noreferrer" className="text-[var(--color-brand-accent)] hover:underline">Satwik Sai Prakash Sahoo&apos;s GSoC 2026 Archive</a></li>
                 </ul>
               </div>
             </div>
