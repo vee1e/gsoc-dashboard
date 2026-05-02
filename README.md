@@ -99,6 +99,7 @@ This project aggregates data from multiple sources. Special thanks to:
 - [Yashvant Singh](https://github.com/JatsuAkaYashvant/Accepted-proposals)
 - [GSoC Proposals Archive](https://github.com/Google-Summer-of-Code-Archive/gsoc-proposals-archive)
 - [Samman Sarkar's GSoC 2025 Archive](https://github.com/SammanSarkar/GSoC_archive_2025)
+- [Satwik Sai Prakash Sahoo&apos;s GSoC 2026 Archive](https://github.com/satwiksps/GSoC_archive_2026)
 
 ## License
 
