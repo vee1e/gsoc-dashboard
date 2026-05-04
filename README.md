@@ -47,7 +47,7 @@ Static files will be generated in the `dist/` directory.
 
 ## Data Format
 
-The dashboard consumes a CSV file (`public/combined_metadata.csv`) with the following columns:
+The dashboard consumes a JSON file (`public/combined_metadata.json`) with the following fields:
 
 | Column | Description |
 |--------|-------------|
@@ -72,7 +72,7 @@ The dashboard consumes a CSV file (`public/combined_metadata.csv`) with the foll
 | [React 19](https://react.dev) | UI library with hooks for state management |
 | [Vite 8](https://vitejs.dev) | Fast build tool & dev server |
 | [Tailwind CSS 4](https://tailwindcss.com) | Utility-first CSS framework |
-| [PapaParse](https://www.papaparse.com) | CSV parsing in the browser |
+| Native Fetch API | JSON data loading |
 | [FontAwesome](https://fontawesome.com) | Icons for UI elements |
 | [react-window](https://github.com/bvaughn/react-window) | (Optional) Virtualization for large lists |
 
