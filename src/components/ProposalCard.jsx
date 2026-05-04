@@ -220,7 +220,7 @@ export function ProposalCard({ data }) {
     <article className="h-full flex flex-col bg-[var(--color-brand-surface)] rounded-2xl border border-[var(--color-brand-border)] hover:bg-[#282A2C] transition-colors duration-200 overflow-hidden">
       
       {/* Header */}
-      <header className="p-4 sm:p-5 pb-5 sm:pb-6 border-b border-[var(--color-brand-border)]">
+      <header className="p-4 sm:p-5 pb-3 sm:pb-4 border-b border-[var(--color-brand-border)]">
         {/* Organization Name & Icon Row */}
         <div className="flex items-center gap-3 mb-3 sm:mb-4">
           <h2 className="flex-1 text-lg sm:text-xl font-medium text-[var(--color-brand-accent)] leading-tight line-clamp-2">
