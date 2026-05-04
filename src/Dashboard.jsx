@@ -30,17 +30,16 @@ export function Dashboard() {
   const [error, setError] = useState(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [creditsOpen, setCreditsOpen] = useState(false)
-  const [sidebarWidth, setSidebarWidth] = useState(256) // Default 256px (16rem)
+  const [sidebarWidth, setSidebarWidth] = useState(256)
   const [isResizing, setIsResizing] = useState(false)
 
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedOrg, setSelectedOrg] = useState('All')
-  const [selectedYear, setSelectedYear] = useState('All')
   const [selectedGsocYear, setSelectedGsocYear] = useState('All')
   const [selectedCollege, setSelectedCollege] = useState('All')
   const [minPRs, setMinPRs] = useState(0)
-  const [sortBy, setSortBy] = useState('org') // name, org, year, prs
-  const [sortOrder, setSortOrder] = useState('asc') // asc, desc
+  const [sortBy, setSortBy] = useState('org')
+  const [sortOrder, setSortOrder] = useState('asc')
   const searchInputRef = useRef(null)
 
   useEffect(() => {
@@ -61,7 +60,6 @@ export function Dashboard() {
       })
   }, [])
 
-  // Keyboard shortcut for search (Cmd/Ctrl+K)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -73,7 +71,6 @@ export function Dashboard() {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [])
 
-  // Sidebar resize handlers
   const handleResizeStart = useCallback(() => {
     setIsResizing(true)
   }, [])
@@ -100,20 +97,13 @@ export function Dashboard() {
     }
   }, [isResizing, handleResize, handleResizeEnd])
 
-  // Extract unique filter options
   const filterOptions = useMemo(() => {
     const orgs = new Set()
-    const years = new Set()
     const gsocYears = new Set()
     const colleges = new Set()
 
     data.forEach((item) => {
       if (item.org) orgs.add(item.org)
-      // Only add valid numeric years
-      if (item.year_of_graduation && /^\d{4}$/.test(item.year_of_graduation)) {
-        years.add(parseInt(item.year_of_graduation))
-      }
-      // Extract GSoC year from pdf_filename (format: "Org - YEAR - Name.pdf")
       if (item.pdf_filename) {
         const match = item.pdf_filename.match(/\b(20\d{2})\b/)
         if (match) {
@@ -125,13 +115,11 @@ export function Dashboard() {
 
     return {
       orgs: ['All', ...Array.from(orgs).sort()],
-      years: ['All', ...Array.from(years).sort((a, b) => b - a).map(String)],
       gsocYears: ['All', ...Array.from(gsocYears).sort((a, b) => b - a).map(String)],
       colleges: ['All', ...Array.from(colleges).sort()]
     }
   }, [data])
 
-  // Filter and sort data
   const filteredData = useMemo(() => {
     let result = data.filter((item) => {
       const searchLower = searchTerm.toLowerCase()
@@ -142,15 +130,13 @@ export function Dashboard() {
         item.short_desc_about_contributor_40_words?.toLowerCase().includes(searchLower)
 
       const matchesOrg = selectedOrg === 'All' || item.org === selectedOrg
-      const matchesYear = selectedYear === 'All' || item.year_of_graduation === selectedYear
       const matchesGsocYear = selectedGsocYear === 'All' || (item.pdf_filename && item.pdf_filename.includes(selectedGsocYear))
       const matchesCollege = selectedCollege === 'All' || item.college === selectedCollege
       const matchesPRs = minPRs === 0 || parseInt(item.previous_no_of_prs_in_org || 0) >= minPRs
 
-      return matchesSearch && matchesOrg && matchesYear && matchesGsocYear && matchesCollege && matchesPRs
+      return matchesSearch && matchesOrg && matchesGsocYear && matchesCollege && matchesPRs
     })
 
-    // Sort results
     return result.sort((a, b) => {
       let comparison = 0
       switch (sortBy) {
@@ -171,22 +157,19 @@ export function Dashboard() {
       }
       return sortOrder === 'asc' ? comparison : -comparison
     })
-  }, [data, searchTerm, selectedOrg, selectedYear, selectedGsocYear, selectedCollege, minPRs, sortBy, sortOrder])
+  }, [data, searchTerm, selectedOrg, selectedGsocYear, selectedCollege, minPRs, sortBy, sortOrder])
 
-  // Active filters count
   const activeFilterCount = useMemo(() => {
     let count = 0
     if (selectedOrg !== 'All') count++
-    if (selectedYear !== 'All') count++
     if (selectedGsocYear !== 'All') count++
     if (selectedCollege !== 'All') count++
     if (minPRs > 0) count++
     return count
-  }, [selectedOrg, selectedYear, selectedGsocYear, selectedCollege, minPRs])
+  }, [selectedOrg, selectedGsocYear, selectedCollege, minPRs])
 
   const clearFilters = useCallback(() => {
     setSelectedOrg('All')
-    setSelectedYear('All')
     setSelectedGsocYear('All')
     setSelectedCollege('All')
     setMinPRs(0)
@@ -248,16 +231,16 @@ export function Dashboard() {
         />
 
         {/* Scrollable Filter Content */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {/* Sort */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm font-semibold text-[var(--color-brand-text)]">
               <FontAwesomeIcon icon={faSort} className="text-[var(--color-brand-accent)]" />
               Sort By
             </label>
             <div className="relative">
               <select
-                className="w-full bg-[var(--color-brand-bg)] border border-[var(--color-brand-border)] rounded-lg py-2.5 px-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-accent)] focus:border-transparent appearance-none cursor-pointer text-sm text-[var(--color-brand-text)]"
+                className="w-full bg-[var(--color-brand-bg)] border border-[var(--color-brand-border)] rounded-lg py-1.5 px-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-accent)] focus:border-transparent appearance-none cursor-pointer text-sm text-[var(--color-brand-text)]"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
@@ -273,7 +256,7 @@ export function Dashboard() {
             <div className="flex gap-2">
               <button
                 onClick={() => setSortOrder('asc')}
-                className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-colors ${
+                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold transition-colors ${
                   sortOrder === 'asc'
                     ? 'bg-[var(--color-brand-accent)] text-black'
                     : 'bg-[var(--color-brand-bg)] border border-[var(--color-brand-border)] text-[var(--color-brand-muted)] hover:text-[var(--color-brand-text)]'
@@ -283,7 +266,7 @@ export function Dashboard() {
               </button>
               <button
                 onClick={() => setSortOrder('desc')}
-                className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-colors ${
+                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold transition-colors ${
                   sortOrder === 'desc'
                     ? 'bg-[var(--color-brand-accent)] text-black'
                     : 'bg-[var(--color-brand-bg)] border border-[var(--color-brand-border)] text-[var(--color-brand-muted)] hover:text-[var(--color-brand-text)]'
@@ -295,7 +278,7 @@ export function Dashboard() {
           </div>
 
           {/* Search */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm font-semibold text-[var(--color-brand-text)]">
               <FontAwesomeIcon icon={faSearch} className="text-[var(--color-brand-accent)]" />
               Search
@@ -307,21 +290,21 @@ export function Dashboard() {
               ref={searchInputRef}
               type="text"
               placeholder="Name, org, college..."
-              className="w-full bg-[var(--color-brand-bg)] border border-[var(--color-brand-border)] rounded-lg py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-accent)] focus:border-transparent transition-all text-sm text-[var(--color-brand-text)] placeholder:text-[var(--color-brand-muted)]"
+              className="w-full bg-[var(--color-brand-bg)] border border-[var(--color-brand-border)] rounded-lg py-1.5 px-3 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-accent)] focus:border-transparent transition-all text-sm text-[var(--color-brand-text)] placeholder:text-[var(--color-brand-muted)]"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
           {/* Organization */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm font-semibold text-[var(--color-brand-text)]">
               <FontAwesomeIcon icon={faBuilding} className="text-[var(--color-brand-accent)]" />
               Organization
             </label>
             <div className="relative">
               <select
-                className="w-full bg-[var(--color-brand-bg)] border border-[var(--color-brand-border)] rounded-lg py-2.5 px-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-accent)] focus:border-transparent appearance-none cursor-pointer text-sm text-[var(--color-brand-text)]"
+                className="w-full bg-[var(--color-brand-bg)] border border-[var(--color-brand-border)] rounded-lg py-1.5 px-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-accent)] focus:border-transparent appearance-none cursor-pointer text-sm text-[var(--color-brand-text)]"
                 value={selectedOrg}
                 onChange={(e) => setSelectedOrg(e.target.value)}
               >
@@ -335,37 +318,15 @@ export function Dashboard() {
             </div>
           </div>
 
-          {/* Graduation Year */}
-          <div className="space-y-3">
-            <label className="flex items-center gap-2 text-sm font-semibold text-[var(--color-brand-text)]">
-              <FontAwesomeIcon icon={faGraduationCap} className="text-[var(--color-brand-accent)]" />
-              Graduation Year
-            </label>
-            <div className="relative">
-              <select
-                className="w-full bg-[var(--color-brand-bg)] border border-[var(--color-brand-border)] rounded-lg py-2.5 px-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-accent)] focus:border-transparent appearance-none cursor-pointer text-sm text-[var(--color-brand-text)]"
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-              >
-                {filterOptions.years.map((year) => (
-                  <option key={year} value={year} className="bg-[var(--color-brand-bg)] text-[var(--color-brand-text)]">{year}</option>
-                ))}
-              </select>
-              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[var(--color-brand-muted)]">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-              </div>
-            </div>
-          </div>
-
           {/* GSoC Year */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm font-semibold text-[var(--color-brand-text)]">
               <FontAwesomeIcon icon={faGraduationCap} className="text-[var(--color-brand-accent)]" />
               GSoC Year
             </label>
             <div className="relative">
               <select
-                className="w-full bg-[var(--color-brand-bg)] border border-[var(--color-brand-border)] rounded-lg py-2.5 px-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-accent)] focus:border-transparent appearance-none cursor-pointer text-sm text-[var(--color-brand-text)]"
+                className="w-full bg-[var(--color-brand-bg)] border border-[var(--color-brand-border)] rounded-lg py-1.5 px-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-accent)] focus:border-transparent appearance-none cursor-pointer text-sm text-[var(--color-brand-text)]"
                 value={selectedGsocYear}
                 onChange={(e) => setSelectedGsocYear(e.target.value)}
               >
@@ -380,14 +341,14 @@ export function Dashboard() {
           </div>
 
           {/* College */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm font-semibold text-[var(--color-brand-text)]">
               <FontAwesomeIcon icon={faBuilding} className="text-[var(--color-brand-accent)]" />
               College
             </label>
             <div className="relative">
               <select
-                className="w-full bg-[var(--color-brand-bg)] border border-[var(--color-brand-border)] rounded-lg py-2.5 px-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-accent)] focus:border-transparent appearance-none cursor-pointer text-sm text-[var(--color-brand-text)]"
+                className="w-full bg-[var(--color-brand-bg)] border border-[var(--color-brand-border)] rounded-lg py-1.5 px-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-accent)] focus:border-transparent appearance-none cursor-pointer text-sm text-[var(--color-brand-text)]"
                 value={selectedCollege}
                 onChange={(e) => setSelectedCollege(e.target.value)}
               >
@@ -404,7 +365,7 @@ export function Dashboard() {
           </div>
 
           {/* PR Count */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm font-semibold text-[var(--color-brand-text)]">
               <FontAwesomeIcon icon={faChartBar} className="text-[var(--color-brand-accent)]" />
               Minimum PRs: {minPRs}
@@ -428,16 +389,35 @@ export function Dashboard() {
 
         {/* Clear Filters Button */}
         {activeFilterCount > 0 && (
-          <div className="p-6 border-t border-[var(--color-brand-border)]">
+          <div className="p-4 border-t border-[var(--color-brand-border)]">
             <button
               onClick={clearFilters}
-              className="w-full py-2.5 px-4 bg-red-950/20 text-red-400 hover:bg-red-900/40 hover:text-red-300 border border-red-900/30 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+              className="w-full py-1.5 px-4 bg-red-950/20 text-red-400 hover:bg-red-900/40 hover:text-red-300 border border-red-900/30 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"
             >
               <FontAwesomeIcon icon={faTimes} />
               Clear All Filters
             </button>
           </div>
         )}
+
+        {/* Sidebar Footer with Logo and Credits */}
+        <div className="p-4 border-t border-[var(--color-brand-border)] mt-auto">
+          <div className="flex flex-col items-center gap-3">
+            <img
+              src="/GSoC-icon.svg"
+              alt="GSoC Logo"
+              className="w-16 h-16 opacity-90 hover:opacity-100 transition-opacity"
+            />
+            <a
+              href="https://github.com/vee1e"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-[var(--color-brand-muted)] hover:text-[var(--color-brand-accent)] transition-colors"
+            >
+              built by Lakshit Verma
+            </a>
+          </div>
+        </div>
       </aside>
 
       {/* Mobile Overlay */}

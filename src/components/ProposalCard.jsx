@@ -124,7 +124,7 @@ const ORG_ICON_MAP = {
   'Mozilla': 'mozilla',
   'NRNB': 'national_resource_for_network_biology__nrnb_',
   'NumFOCUS': 'numfocus',
-  'OSGeo': 'osgeo',
+  'OSGeo': 'osgeo__open_source_geospatial_foundation_',
   'OSIPI': 'osipi',
   'OWASP': 'owasp_foundation',
   'Open Source Robotics Foundation': 'open_source_robotics_foundation',

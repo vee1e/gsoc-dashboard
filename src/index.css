@@ -4,13 +4,13 @@
 @theme {
   --font-serif: "Google Sans", sans-serif;
   --font-sans: "Google Sans", sans-serif;
-  --color-brand-accent: #A8C7FA; /* Google Material Dark Blue */
-  --color-brand-bg: #131314; /* Requested background */
-  --color-brand-surface: #1E1F20; /* Slightly lighter for cards/sidebar */
+  --color-brand-accent: #A8C7FA;
+  --color-brand-bg: #131314;
+  --color-brand-surface: #1E1F20;
   --color-brand-card: #1E1F20;
-  --color-brand-text: #E3E3E3; /* Google Dark Primary Text */
-  --color-brand-muted: #C4C7C5; /* Google Dark Secondary Text */
-  --color-brand-border: #444746; /* Google Dark Outline */
+  --color-brand-text: #E3E3E3;
+  --color-brand-muted: #C4C7C5;
+  --color-brand-border: #444746;
 }
 
 body {
