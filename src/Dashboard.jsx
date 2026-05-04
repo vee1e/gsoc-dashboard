@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
-import Papa from 'papaparse'
 import { ProposalCard } from './components/ProposalCard'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -45,21 +44,16 @@ export function Dashboard() {
   const searchInputRef = useRef(null)
 
   useEffect(() => {
-    fetch('/combined_metadata.csv')
-      .then((response) => response.text())
-      .then((csvText) => {
-        Papa.parse(csvText, {
-          header: true,
-          skipEmptyLines: true,
-          complete: (results) => {
-            setData(results.data)
-            setLoading(false)
-          },
-          error: (err) => {
-            setError(err.message)
-            setLoading(false)
-          }
-        })
+    fetch('/combined_metadata.json')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        return response.json()
+      })
+      .then((jsonData) => {
+        setData(jsonData)
+        setLoading(false)
       })
       .catch((err) => {
         setError(err.message)
