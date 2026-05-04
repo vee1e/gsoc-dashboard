@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFilePdf, faBuilding, faGraduationCap, faCodeBranch, faExternalLinkAlt, faUser, faGlobe, faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import {
@@ -28,6 +29,174 @@ const socialIconMap = {
   website: faGlobe,
 }
 
+/**
+ * Map organization name to icon filename
+ * Converts org name to snake_case and matches against available icons
+ */
+const ORG_ICON_MAP = {
+  // Exact matches and common variations
+  'AOSSIE': 'aossie',
+  'AboutCode': 'aboutcode',
+  'Accord Project': 'accord_project',
+  'Alaska': 'alaska',
+  'AnkiDroid': 'ankidroid',
+  'Apache': 'apache_software_foundation',
+  'Apertium': 'apertium',
+  'Apertus': 'apertus',
+  'AsyncAPI': 'asyncapi',
+  'BeagleBoard': 'beagleboard',
+  'Beehive': 'beehive',
+  'Boost': 'boost',
+  'C2SI': 'c2si',
+  'CASTOR': 'castor',
+  'CCExtractor': 'ccextractor_development',
+  'CDLI': 'cuneiform_digital_library_initiative__cdli_',
+  'CERN-HSF': 'cern_hsf',
+  'CHAOSS': 'chaoss',
+  'CNCF': 'cncf',
+  'CVXPY': 'cvxpy',
+  'Casbin': 'casbin',
+  'Catrobat': 'international_catrobat_association',
+  'Ceph': 'ceph',
+  'Chapel': 'chapel',
+  'Chromium': 'chromium',
+  'Cilium': 'cilium',
+  'CircuitVerse': 'circuitverse_org',
+  'CloudCV': 'cloudcv',
+  'Coala': 'coala',
+  'CodeCombat': 'codecombat',
+  'Continuous Delivery Foundation': 'continuous_delivery_foundation',
+  'Creative Commons': 'creative_commons',
+  'D4GC': 'data_for_the_common_good',
+  'DBpedia': 'dbpedia',
+  'DIAL': 'dial',
+  'DatenLord': 'datenlord',
+  'Debian': 'debian',
+  'Drupal': 'drupal_association',
+  'Elasticsearch': 'elasticsearch',
+  'Emory BMI': 'emory_bmi',
+  'Emory University': 'emory_university',
+  'FLARE': 'flare',
+  'FOSSASIA': 'fossasia',
+  'Freifunk': 'freifunk',
+  'GA4GH': 'global_alliance_for_genomics_and_health',
+  'GFOSS': 'open_technologies_alliance___gfoss',
+  'GNOME': 'gnome_foundation',
+  'GNU Octave': 'gnu_octave',
+  'Gambit': 'gambit__the_package_for_computation_in_game_theory',
+  'Google DeepMind': 'google_deepmind',
+  'Graphite': 'graphite',
+  'Haskell.org': 'haskell_org',
+  'Honeynet': 'the_honeynet_project',
+  'HumanAI': 'humanai',
+  'INCF': 'incf',
+  'Inkscape': 'inkscape',
+  'Intel': 'intel',
+  'Internet Health Report': 'internet_health_report',
+  'JDERobot': 'jderobot',
+  'JPF': 'the_jpf_team',
+  'JSON Schema': 'json_schema',
+  'Joomla': 'joomla_',
+  'Joplin': 'joplin',
+  'Julia': 'julia',
+  'JuliaDiffEq': 'juliadiffeq',
+  'KDE': 'kde_community',
+  'Kiwix': 'kiwix',
+  'Kornia': 'kornia',
+  'Kro': 'kro',
+  'Kubeflow': 'kubeflow',
+  'Kubevirt': 'kubevirt',
+  'Learning Equality': 'learning_equality',
+  'LibreCube': 'librecube_initiative',
+  'LibreCube Initiative': 'librecube_initiative',
+  'LibreHealth': 'librehealth',
+  'LibreOffice': 'libreoffice',
+  'Libreswan': 'the_libreswan_project',
+  'Liquid Galaxy': 'liquid_galaxy_project',
+  'MIT App Inventor': 'mit_app_inventor',
+  'ML4SCI': 'machine_learning_for_science__ml4sci_',
+  'MLPack': 'mlpack',
+  'Mathesar': 'mathesar',
+  'MediaWiki': 'mediawiki',
+  'Mesa': 'project_mesa',
+  'MetaBrainz': 'metabrainz_foundation_inc',
+  'Metacall': 'metacall',
+  'Mozilla': 'mozilla',
+  'NRNB': 'national_resource_for_network_biology__nrnb_',
+  'NumFOCUS': 'numfocus',
+  'OSGeo': 'osgeo',
+  'OSIPI': 'osipi',
+  'OWASP': 'owasp_foundation',
+  'Open Source Robotics Foundation': 'open_source_robotics_foundation',
+  'OpenAstronomy': 'openastronomy',
+  'OpenScienceLabs': 'open_science_labs',
+  'OpenWISP': 'openwisp',
+  'Oppia': 'oppia',
+  'PEcAn': 'pecan',
+  'Palisadoes Foundation': 'palisadoes_foundation',
+  'Pharo Consortium': 'pharo_consortium',
+  'Pitivi': 'pitivi',
+  'Processing Foundation': 'processing_foundation',
+  'Prometheus-Operator': 'prometheus_operator',
+  'Public Lab': 'public_lab',
+  'Purr Data': 'purr_data',
+  'PyBaMM': 'pybamm',
+  'Python Software Foundation': 'python_software_foundation',
+  'R Project for Statistical Computing': 'r_project_for_statistical_computing',
+  'RoboComp': 'robocomp',
+  'Robolectric': 'robolectric',
+  'Rocket.Chat': 'rocket_chat',
+  'Rocket.chat': 'rocket_chat',
+  'SAT': 'sat',
+  'SBI': 'sbi',
+  'SCoRe': 'scorelab',
+  'SciML': 'sciml',
+  'ScummVM': 'scummvm',
+  'SoSy Lab': 'sosy_lab',
+  'Software Heritage': 'software_heritage',
+  'Stichting SU2': 'stichting_su2',
+  'Stratosphere Research Laboratory': 'stratosphere_research_laboratory',
+  'Submitty': 'submitty',
+  'Sugar Labs': 'sugar_labs',
+  'SymPy': 'sympy',
+  'TARDIS SN': 'tardis',
+  'TensorFlow': 'tensorflow',
+  'Tiled': 'tiled',
+  'UAF': 'uaf',
+  'UC OSPO': 'uc_ospo',
+  'UCCROSS': 'uccross',
+  'Unicode': 'unicode',
+  'VideoLAN': 'videolan',
+  'Wagtail': 'wagtail',
+  'WikiLoop': 'wikiloop',
+  'Wikimedia': 'wikimedia_foundation',
+  'Zulip': 'zulip',
+  'cBioPortal': 'cbioportal_for_cancer_genomics',
+  'jQuery': 'jquery',
+  'libcamera': 'libcamera',
+  'libssh': 'libssh',
+  'omegaUp': 'omegaup',
+  'pgRouting': 'pgrouting',
+  'xrdesktop': 'xrdesktop',
+}
+
+function getOrgIconPath(orgName) {
+  if (!orgName) return null
+
+  // Check for exact match in mapping
+  if (ORG_ICON_MAP[orgName]) {
+    return `/icons/${ORG_ICON_MAP[orgName]}.png`
+  }
+
+  // Convert to snake_case: lowercase, replace non-alphanumeric with underscore
+  const snakeCase = orgName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+
+  return `/icons/${snakeCase}.png`
+}
+
 export function ProposalCard({ data }) {
   // Extract socials and links that have a value
   const socialLinks = [
@@ -44,14 +213,33 @@ export function ProposalCard({ data }) {
     { key: 'discord', link: data.discord }
   ].filter(s => s.link && s.link.trim() !== '')
 
+  const orgIconPath = getOrgIconPath(data.org)
+  const [iconError, setIconError] = useState(false)
+
   return (
     <article className="h-full flex flex-col bg-[var(--color-brand-surface)] rounded-2xl border border-[var(--color-brand-border)] hover:bg-[#282A2C] transition-colors duration-200 overflow-hidden">
       
       {/* Header */}
-      <header className="p-4 sm:p-5 border-b border-[var(--color-brand-border)]">
-        <h2 className="text-lg sm:text-xl font-medium text-[var(--color-brand-accent)] leading-tight line-clamp-2 mb-3 sm:mb-4">
-          {data.org || "Unknown Organization"}
-        </h2>
+      <header className="p-4 sm:p-5 pb-5 sm:pb-6 border-b border-[var(--color-brand-border)]">
+        {/* Organization Name & Icon Row */}
+        <div className="flex items-center gap-3 mb-3 sm:mb-4">
+          <h2 className="flex-1 text-lg sm:text-xl font-medium text-[var(--color-brand-accent)] leading-tight line-clamp-2">
+            {data.org || "Unknown Organization"}
+          </h2>
+
+          {/* Organization Icon */}
+          {orgIconPath && !iconError && (
+            <div className="flex-shrink-0 max-w-[80px] sm:max-w-[100px] self-center bg-white rounded-md p-1 flex items-center justify-center">
+              <img
+                src={orgIconPath}
+                alt={`${data.org} logo`}
+                className="w-auto max-h-8 sm:max-h-10 object-contain opacity-90 hover:opacity-100 transition-opacity"
+                onError={() => setIconError(true)}
+                loading="lazy"
+              />
+            </div>
+          )}
+        </div>
 
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1.5 px-2 py-1 bg-[var(--color-brand-bg)] text-[var(--color-brand-text)] rounded-md text-xs font-medium min-w-0 max-w-[160px]" title={data.fullname || "Anonymous"}>
